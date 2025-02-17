@@ -28,7 +28,7 @@ jobs:
       # **Generate C++ Protobuf Code**
       - name: Generate C++ Protobuf
         run: |
-          mkdir -p cpp_out
+          mkdir -p $CPP_OUTPUT_DIRECTORY
           protoc --cpp_out=$CPP_OUTPUT_DIRECTORY ${PROTOS_DIRECTORY}/*.proto
 
       # **Generate Dart Protobuf Code**
@@ -40,7 +40,7 @@ jobs:
 
       - name: Generate Dart Protobuf
         run: |
-          mkdir -p dart_out
+          mkdir -p $DART_OUTPUT_DIRECTORY
           protoc --dart_out=$DART_OUTPUT_DIRECTORY ${PROTOS_DIRECTORY}/*.proto
 
       # **Commit & Push Generated Files**
