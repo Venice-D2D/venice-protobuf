@@ -1,0 +1,53 @@
+name: Build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CPP_OUTPUT_DIRECTORY: cpp_proto
+  DART_OUTPUT_DIRECTORY: dart_proto
+  PROTOS_DIRECTORY: protos
+
+jobs:
+  generate-protobuf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Protobuf Compiler
+        run: |
+          sudo apt update
+          sudo apt install -y protobuf-compiler
+          protoc --version
+
+      # **Generate C++ Protobuf Code**
+      - name: Generate C++ Protobuf
+        run: |
+          mkdir -p cpp_out
+          protoc --cpp_out=$CPP_OUTPUT_DIRECTORY ${PROTOS_DIRECTORY}/*.proto
+
+      # **Generate Dart Protobuf Code**
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Install Dart Protobuf Plugin
+        run: dart pub global activate protoc_plugin
+
+      - name: Generate Dart Protobuf
+        run: |
+          mkdir -p dart_out
+          protoc --dart_out=$DART_OUTPUT_DIRECTORY ${PROTOS_DIRECTORY}/*.proto
+
+      # **Commit & Push Generated Files**
+      - name: Commit & Push Changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add ${CPP_OUTPUT_DIRECTORY}/ ${DART_OUTPUT_DIRECTORY}/
+          git commit -m "Auto-generated Protobuf files [CI]" || echo "No changes to commit"
+          git push origin main || echo "No changes to push"
