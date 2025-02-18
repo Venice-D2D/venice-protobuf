@@ -29,7 +29,7 @@ jobs:
       - name: Generate C++ Protobuf
         run: |
           mkdir -p $CPP_OUTPUT_DIRECTORY
-          protoc --cpp_out=$CPP_OUTPUT_DIRECTORY ${PROTOS_DIRECTORY}/*.proto
+          protoc --cpp_out=$CPP_OUTPUT_DIRECTORY --proto_path=$PROTOS_DIRECTORY ${PROTOS_DIRECTORY}/*.proto
 
       # **Generate Dart Protobuf Code**
       - name: Setup Dart
